@@ -628,17 +628,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46edcb8494599aa4eab14aeaf4fe7282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  oceanMaterial: {fileID: -876546973899608171, guid: 6e62ff4ed170a924f887bcbc72a47734, type: 3}
+  spriteMaterial: {fileID: -876546973899608171, guid: 6e62ff4ed170a924f887bcbc72a47734, type: 3}
   filterMode: 1
   wrapMode: 1
   mapWidth: 512
   mapHeight: 512
   scale: 50
+  minDepth: 0
   maxDepth: 100
   noiseScale: 0.1
   octaves: 4
   persistence: 0.5
   lacunarity: 2
+  logValues: 1
+  showDebugColors: 1
 --- !u!4 &1649176179
 Transform:
   m_ObjectHideFlags: 0

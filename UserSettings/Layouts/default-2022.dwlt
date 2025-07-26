@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1265.3334
     height: 662.6667
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Scene
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -239,7 +239,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ProjectBrowser
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -248,15 +248,15 @@ MonoBehaviour:
     y: 341.33334
     width: 888
     height: 271.33334
-  m_MinSize: {x: 231, y: 271}
-  m_MaxSize: {x: 10001, y: 10021}
-  m_ActualView: {fileID: 18}
+  m_MinSize: {x: 101, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
+  m_ActualView: {fileID: 19}
   m_Panes:
   - {fileID: 18}
   - {fileID: 19}
   - {fileID: 20}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -2010,9 +2010,9 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
+    m_SelectedInstanceIDs: c86b0000
+    m_LastClickedInstanceID: 27592
+    m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: c62300005e8300006c8600009e670000186d00007c7100006a8a0000ac790000d2710000e27500005a6f0000e06e0000527d0000e87b00008e1d0100e60e0200582d0100ec7a00001e7c00004ea20000dc8400000c850000fa830000da8900005c7500001c7e0000507500000000000056780000ecf9070080a20100606b0300382a0400cc182c0040d100003c3f0200c0700100da3d01006ea10300d217010092cc0600c4cc060098dc0600be950d00cae30d0038410100e43f0400726e0000bc01000008740000c86e0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -2095,10 +2095,10 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 0
-    y: 342.6667
-    width: 869.6667
-    height: 336.3333
+    x: 7.3333335
+    y: 421.33334
+    width: 887
+    height: 250.33334
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -2228,12 +2228,12 @@ MonoBehaviour:
       oldMaxSizes: 
       oldSplitSize: 0
     m_HorizontalSplitter:
-      ID: 1646
+      ID: 219
       splitterInitialOffset: 0
       currentActiveSplitter: -1
       realSizes:
-      - 260.66666
-      - 609.3334
+      - 266
+      - 621.3333
       relativeSizes:
       - 0.3
       - 0.7
@@ -2243,7 +2243,7 @@ MonoBehaviour:
       maxSizes:
       - 0
       - 0
-      lastTotalSize: 870
+      lastTotalSize: 887.3333
       splitSize: 6
       xOffset: 0
       m_Version: 1
