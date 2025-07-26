@@ -52,6 +52,9 @@ UnityEditor
 AdvancedRuleOverrideTile
 UnityEngine
 RuleOverrideTile
+MaterialQuality
+Utilities
+MaterialQualityUtilities
 AssetModificationProcessor
 
 Sysroot

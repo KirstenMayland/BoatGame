@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class OceanDepthMap : MonoBehaviour
 {
+    [Header("References")]
+    public Material oceanMaterial; // Your material using the OceanShader
+    
+    [Header("Texture Settings")]
+    public FilterMode filterMode = FilterMode.Bilinear;
+    public TextureWrapMode wrapMode = TextureWrapMode.Clamp;
+
     [Header("Map Settings")]
     public int mapWidth = 512;
     public int mapHeight = 512;
@@ -17,12 +24,23 @@ public class OceanDepthMap : MonoBehaviour
     public float lacunarity = 2f;
     
     private float[,] depthMap;
+    private Texture2D depthTexture;
     
     // -----------------------------------------------
     void Start()
     {
         GenerateDepthMap();
-        CreateDepthTexture();
+        
+        if (oceanMaterial == null)
+        {
+            oceanMaterial = GetComponent<Renderer>().material;
+        }
+        
+        CreateAndAssignDepthTexture();
+
+        // Apply to a sprite renderer or UI element
+        GetComponent<SpriteRenderer>().sprite = Sprite.Create(depthTexture, 
+            new Rect(0, 0, mapWidth, mapHeight), Vector2.one * 0.5f);
     }
 
     // -----------------------------------------------
@@ -67,25 +85,78 @@ public class OceanDepthMap : MonoBehaviour
     }
 
     // -----------------------------------------------
-    // eventuallu will become redundant, use for error checking
-    public void CreateDepthTexture()
+    public void CreateAndAssignDepthTexture()
     {
-        Texture2D depthTexture = new Texture2D(mapWidth, mapHeight);
+        if (depthMap == null || oceanMaterial == null) return;
         
-        for (int x = 0; x < mapWidth; x++)
+        // Get the depth map data
+        float[,] depthData = depthMap;
+        if (depthData == null)
         {
-            for (int y = 0; y < mapHeight; y++)
+            Debug.LogError("Depth map is null! Make sure GenerateDepthMap() was called.");
+            return;
+        }
+        int width = depthData.GetLength(0);
+        int height = depthData.GetLength(1);
+        
+        // Create texture
+        depthTexture = new Texture2D(width, height, TextureFormat.RFloat, false);
+        depthTexture.filterMode = filterMode;
+        depthTexture.wrapMode = wrapMode;
+        
+        // Convert depth array to texture data
+        Color[] pixels = new Color[width * height];
+        
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
             {
-                float normalizedDepth = depthMap[x, y] / maxDepth;
-                Color pixelColor = Color.Lerp(Color.white, Color.blue, normalizedDepth);
-                depthTexture.SetPixel(x, y, pixelColor);
+                // Normalize depth value (0-1 range)
+                float normalizedDepth = depthData[x, y] / maxDepth;
+                
+                // Store depth in red channel (shader expects it there)
+                Color pixelColor = new Color(normalizedDepth, normalizedDepth, normalizedDepth, 1f);
+                pixels[y * width + x] = pixelColor;
             }
         }
         
+        depthTexture.SetPixels(pixels);
         depthTexture.Apply();
         
-        // Apply to a sprite renderer or UI element
-        GetComponent<SpriteRenderer>().sprite = Sprite.Create(depthTexture, 
-            new Rect(0, 0, mapWidth, mapHeight), Vector2.one * 0.5f);
+        // Assign to material
+        AssignToMaterial();
+    }
+    
+    void AssignToMaterial()
+    {
+        if (oceanMaterial == null || depthTexture == null) return;
+        
+        // Assign the depth texture
+        oceanMaterial.SetTexture("_HeightMap", depthTexture);
+        oceanMaterial.SetTexture("HeightMap", depthTexture);  // Without underscore
+        
+        // Set world positioning (adjust these based on your world setup)
+        Vector2 worldPos = new Vector2(transform.position.x, transform.position.y);
+        oceanMaterial.SetVector("_CurrentWorldTexturePos", worldPos);
+        
+        // Set scale (how many world units the texture covers)
+        float worldScale = scale; // Use your scale from depth map
+        oceanMaterial.SetFloat("_CurrentWorldTextureScale", worldScale);
+        
+        Debug.Log("Depth texture assigned to material!");
+    }
+    
+    // Call this if you regenerate the depth map at runtime
+    public void UpdateDepthTexture()
+    {
+        CreateAndAssignDepthTexture();
+    }
+    
+    void OnDestroy()
+    {
+        if (depthTexture != null)
+        {
+            DestroyImmediate(depthTexture);
+        }
     }
 }
