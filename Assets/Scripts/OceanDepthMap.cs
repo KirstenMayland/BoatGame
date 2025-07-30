@@ -31,6 +31,7 @@ public class OceanDepthMap : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private float[,] depthMap;
     private Texture2D depthTexture;
+
     
     // -----------------------------------------------
     void Awake()
@@ -73,6 +74,7 @@ public class OceanDepthMap : MonoBehaviour
                 depthMap[x, y] = depth;
             }
         }
+
     }
 
     float GenerateDepthAtPoint(int x, int y)
@@ -97,8 +99,8 @@ public class OceanDepthMap : MonoBehaviour
         
         noiseHeight /= maxValue;
         
-        // Convert to depth (0 = surface, lower = deeper)
-        return noiseHeight * maxDepth * -1;
+        // Convert to depth (0 = surface, higher = deeper)
+        return noiseHeight * maxDepth;
     }
 
     // -----------------------------------------------
@@ -142,7 +144,7 @@ public class OceanDepthMap : MonoBehaviour
             {
                 // Normalize depth value (0-1 range)
                 float depth = depthData[x, y];
-                float normalizedDepth = (depth - minDepth) / (maxDepth - minDepth);
+                float normalizedDepth = depth / maxDepth;
                 
                 // Store depth in red channel (shader expects it there)
                 Color pixelColor = new Color(normalizedDepth, normalizedDepth, normalizedDepth, 1f);
@@ -169,6 +171,10 @@ public class OceanDepthMap : MonoBehaviour
             Debug.LogError("Can't assign to material");
             return;
         }
+
+        Debug.Log($"Material name: {spriteMaterial.name}");
+        Debug.Log($"SpriteRenderer material: {spriteRenderer.material.name}");
+
         
         // Assign the depth texture
         if (spriteMaterial.HasProperty("_HeightMap"))
