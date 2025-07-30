@@ -14,7 +14,6 @@ public class OceanDepthMap : MonoBehaviour
     [Header("Map Settings")]
     public int mapWidth = 512;
     public int mapHeight = 512;
-    public float scale = 50f;
     public float minDepth = 0f;
     public float maxDepth = 100f;
 
@@ -23,10 +22,6 @@ public class OceanDepthMap : MonoBehaviour
     public int octaves = 4;
     public float persistence = 0.5f;
     public float lacunarity = 2f;
-
-    [Header("Debug")]
-    public bool logValues = true;
-    public bool showDebugColors = true;
     
     private SpriteRenderer spriteRenderer;
     private float[,] depthMap;
