@@ -33,11 +33,19 @@ public class OceanDepthMap : MonoBehaviour
     private Texture2D depthTexture;
     
     // -----------------------------------------------
+    void Awake()
+    {
+        // Only generate if we don't already have data
+        if (depthMap == null)
+        {
+            GenerateDepthMap();
+            Debug.Log("generated depth map");
+        }
+    }
+
+    // -----------------------------------------------
     void Start()
     {
-        GenerateDepthMap();
-        Debug.Log("generated depth map");
-
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer == null)
         {
@@ -45,15 +53,11 @@ public class OceanDepthMap : MonoBehaviour
             return;
         }
 
-        if (depthMap == null)
+        if (depthTexture == null && depthMap != null)
         {
-            Debug.LogError("depthMap not found!");
-            return;
+            Debug.Log("creating texture");
+            CreateAndAssignDepthTexture();
         }
-        
-        Debug.Log("creating texture");
-        CreateAndAssignDepthTexture();
-
     }
 
     // -----------------------------------------------
@@ -93,13 +97,20 @@ public class OceanDepthMap : MonoBehaviour
         
         noiseHeight /= maxValue;
         
-        // Convert to depth (0 = surface, higher = deeper)
-        return noiseHeight * maxDepth;
+        // Convert to depth (0 = surface, lower = deeper)
+        return noiseHeight * maxDepth * -1;
     }
 
     // -----------------------------------------------
     public void CreateAndAssignDepthTexture()
     {
+        // Add this check at the start
+        if (Application.isPlaying == false)
+        {
+            Debug.LogWarning("Cannot create texture outside of play mode");
+            return;
+        }
+        
         if (depthMap == null || spriteMaterial == null)
         {
             Debug.LogError("Depth map or sprite material is null.");
@@ -107,7 +118,7 @@ public class OceanDepthMap : MonoBehaviour
         }
         
         // Get the depth map data
-        float[,] depthData = depthMap;
+        float[,] depthData = (float[,])depthMap.Clone();
         if (depthData == null)
         {
             Debug.LogError("Depth map is null! Make sure GenerateDepthMap() was called.");
@@ -116,11 +127,6 @@ public class OceanDepthMap : MonoBehaviour
 
         int width = depthData.GetLength(0);
         int height = depthData.GetLength(1);
-
-        if (logValues)
-        {
-            Debug.Log($"Creating sprite texture: {width} x {height}");
-        }
         
         // Create texture
         depthTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
@@ -156,6 +162,8 @@ public class OceanDepthMap : MonoBehaviour
     
     void AssignToMaterial()
     {
+        // Shader graph values: _MainTex, HeightMap, DepthGradient, CurrentWorldTexturePos, CurrentWorldTextureScale
+
         if (spriteMaterial == null || spriteRenderer.material.name == "Default Sprite Material" || depthTexture == null)
         {
             Debug.LogError("Can't assign to material");
@@ -168,25 +176,20 @@ public class OceanDepthMap : MonoBehaviour
             spriteMaterial.SetTexture("_HeightMap", depthTexture);
             Debug.Log("Applied texture to _HeightMap property");
         }
-        else if (spriteMaterial.HasProperty("_MainTex"))
-        {
-            spriteMaterial.SetTexture("_MainTex", depthTexture);
-            Debug.Log("Applied texture to _MainTex property");
-        }
 
         // Set positioning if properties exist
         if (spriteMaterial.HasProperty("_CurrentWorldTexturePos"))
         {
             Vector2 bottomLeft = GetBottomLeftWorldPosition();
             spriteMaterial.SetVector("_CurrentWorldTexturePos", bottomLeft);
-            Debug.Log("Applied vector to _CurrentWorldTexturePos property");
+            Debug.Log($"Applied vector to _CurrentWorldTexturePos: {bottomLeft}");
         }
         
         if (spriteMaterial.HasProperty("_CurrentWorldTextureScale"))
         {
-            float scale = GetWorldScale();
-            spriteMaterial.SetFloat("_CurrentWorldTextureScale", scale);
-            Debug.Log("Applied float to _CurrentWorldTextureScale property");
+            float textureScale = GetTextureScale();
+            spriteMaterial.SetFloat("_CurrentWorldTextureScale", textureScale);
+            Debug.Log($"Applied scale to _CurrentWorldTextureScale: {textureScale}");
         }
         
         spriteRenderer.material = spriteMaterial;
@@ -199,10 +202,11 @@ public class OceanDepthMap : MonoBehaviour
         return new Vector2(bounds.min.x, bounds.min.y);
     }
     
-    float GetWorldScale()
+    float GetTextureScale()
     {
         Bounds bounds = spriteRenderer.bounds;
-        return Mathf.Max(bounds.size.x, bounds.size.y);
+        // Return 1/size so we can multiply in shader to normalize coordinates
+        return 1.0f / Mathf.Max(bounds.size.x, bounds.size.y);
     }
     
     // Call this if you regenerate the depth map at runtime
