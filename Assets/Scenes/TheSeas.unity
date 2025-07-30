@@ -635,8 +635,9 @@ MonoBehaviour:
   mapHeight: 512
   minDepth: 0
   maxDepth: 100
-  noiseScale: 0.1
-  octaves: 4
+  scale: 100
+  noiseScale: 0.05
+  octaves: 5
   persistence: 0.5
   lacunarity: 2
 --- !u!4 &1649176179

@@ -16,6 +16,7 @@ public class OceanDepthMap : MonoBehaviour
     public int mapHeight = 512;
     public float minDepth = 0f;
     public float maxDepth = 100f;
+    public float scale = 50f;
 
     [Header("Noise Settings")]
     public float noiseScale = 0.1f;
@@ -31,6 +32,7 @@ public class OceanDepthMap : MonoBehaviour
     // -----------------------------------------------
     void Awake()
     {
+        transform.localScale = new Vector3(scale, scale, 1); 
         // Only generate if we don't already have data
         if (depthMap == null)
         {
@@ -69,7 +71,6 @@ public class OceanDepthMap : MonoBehaviour
                 depthMap[x, y] = depth;
             }
         }
-
     }
 
     float GenerateDepthAtPoint(int x, int y)
